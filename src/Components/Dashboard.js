@@ -127,6 +127,13 @@ export default function Dashboard() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [welcome, setWelcome] = React.useState(true);
+  const [time, setTime] = React.useState("");
+
+  const onTimeChange = (value) => {
+    setTime(value);
+    console.log(value);
+  }
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -135,11 +142,11 @@ export default function Dashboard() {
   };
 
   const turnOffWelcome = () => {
-    setWelcome(false)
+    setWelcome(false);
   }
 
   const turnOnWelcome = () => {
-    setWelcome(true)
+    setWelcome(true);
   }
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
@@ -184,7 +191,10 @@ export default function Dashboard() {
         </div>
 
         <Divider />
-        <ListItems open={open} turnOnWelcome={turnOnWelcome} turnOffWelcome={turnOffWelcome}/>
+        <ListItems open={open} 
+        turnOnWelcome={turnOnWelcome} 
+        turnOffWelcome={turnOffWelcome}
+        onTimeChange={onTimeChange}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

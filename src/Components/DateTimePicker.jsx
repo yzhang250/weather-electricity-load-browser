@@ -8,9 +8,17 @@ export default class DateTimePicker extends Component {
         super(props)
     
         this.state = {
-             
+             value: "2017-05-24T00:00"
         }
     }
+
+    handleValueChange = (e) => {
+        this.setState({value:e.target.value})
+    }
+    onClick = (e) => {
+        this.props.turnOffWelcome();
+        this.props.onTimeChange(this.state.value);
+     }
     
     render() {
         return (
@@ -33,9 +41,10 @@ export default class DateTimePicker extends Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
+                        onChange={this.handleValueChange}
                     />
                 </form>
-                <Button variant="contained" onClick={this.props.turnOffWelcome}>Submit</Button>
+                <Button variant="contained" onClick={this.onClick}>Submit</Button>
             </div>
         )
     }

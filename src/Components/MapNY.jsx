@@ -14,7 +14,7 @@ export default class MapNY extends React.Component {
 
     componentDidMount() {
         // console.log("mount")
-        console.log(node);
+        // console.log(node);
         this.setState({ d3: node });
     }
 
