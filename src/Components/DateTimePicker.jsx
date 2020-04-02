@@ -44,7 +44,7 @@ export default class DateTimePicker extends Component {
                         onChange={this.handleValueChange}
                     />
                 </form>
-                <Button variant="contained" onClick={this.onClick}>Submit</Button>
+                <Button variant="contained" style={{marginTop:20, marginLeft:60}} onClick={this.onClick}>Submit</Button>
             </div>
         )
     }
