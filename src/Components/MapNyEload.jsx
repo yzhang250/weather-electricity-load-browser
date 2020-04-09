@@ -11,7 +11,7 @@ import zip2zone_data from '../data/ny_zone_zip.csv';
 const RD3Component = rd3.Component;
 
 
-export default class MapNY extends React.Component {
+export default class MapNyEload extends React.Component {
 
     constructor(props) {
         super(props);
@@ -20,7 +20,6 @@ export default class MapNY extends React.Component {
             time: this.props.time,
             data: {},
             zip2zone: {},
-            d3_eload: "",
         }
     }
     width = 1100 * .75;
@@ -51,11 +50,11 @@ export default class MapNY extends React.Component {
         }
 
         let zip2zone = {};
-        let zoneTmp = {};
-        let minTemp = 100;
-        let maxTemp = -20;
+        let zoneLoad = {};
+        let minLoad = 1200;
+        let maxLoad = 800;
 
-        let t = timeCovert(this.state.time);
+        let t = timeCovert(this.props.time);
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
             return choices[index];
@@ -73,11 +72,11 @@ export default class MapNY extends React.Component {
             .then(function (data) {
                 for (let i = 0; i < data.length; i++) {
                     if (t === data[i].DATE) {
-                        _data[data[i].zipcode] = data[i].HourlyWetBulbTemperature;
-                        minTemp = Math.min(minTemp, data[i].HourlyWetBulbTemperature);
-                        maxTemp = Math.max(maxTemp, data[i].HourlyWetBulbTemperature)
-                        // todo: zonetmp is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
-                        zoneTmp[zip2zone[data[i].zipcode]] = data[i].HourlyWetBulbTemperature;
+                        _data[data[i].zipcode] = data[i].zone_load_total;
+                        minLoad = Math.min(minLoad, data[i].zone_load_total);
+                        maxLoad = Math.max(maxLoad, data[i].zone_load_total)
+                        // todo: zoneLoad is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
+                        zoneLoad[zip2zone[data[i].zipcode]] = data[i].zone_load_total;
                     }
                 }
                 return _data
@@ -91,13 +90,13 @@ export default class MapNY extends React.Component {
                         }
                         response.json().then(topology => {
                             var geojson = feature(topology, topology.objects.NYS_zip);
-                            var x = d3.scaleLinear()
-                                .domain([minTemp, maxTemp])
+                            let x = d3.scaleLinear()
+                                .domain([minLoad, maxLoad])
                                 .range([1, 9]);
 
                             let color = d3.scaleThreshold()
                                 .domain(d3.range(1, 9))
-                                .range(d3.schemeReds[9]);
+                                .range(d3.schemeBlues[9]);
 
                             this.svg.selectAll("path")
                                 .data(geojson.features)
@@ -107,12 +106,12 @@ export default class MapNY extends React.Component {
                                 .attr("fill", function (d) {
                                     let zipcode = d.properties.ZCTA5CE10;
                                     let zone = zip2zone[zipcode];
-                                    let temperature = zoneTmp[zone];
-                                    if (temperature === undefined) {
+                                    let load = zoneLoad[zone];
+                                    if (load === undefined) {
                                         return "grey"
                                     } else {
                                         // console.log(x(temperature));
-                                        return color(x(temperature));
+                                        return color(x(load));
                                     }
 
 
@@ -140,10 +139,12 @@ export default class MapNY extends React.Component {
             return time.slice(0, 10) + " " + time.slice(11) + ":00";
 
         }
+
         let zip2zone = {};
-        let zoneTmp = {};
-        let minTemp = 100;
-        let maxTemp = -20;
+        let zoneLoad = {};
+        let minLoad = 1000000;
+        let maxLoad = 0;
+
         let t = timeCovert(this.props.time);
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
@@ -161,33 +162,34 @@ export default class MapNY extends React.Component {
         }).then(d3.csv(data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
                 if (t === data[i].DATE) {
+                    // console.log(t);
                     _data[data[i].zipcode] = data[i].HourlyWetBulbTemperature;
-                    minTemp = Math.min(minTemp, data[i].HourlyWetBulbTemperature);
-                    maxTemp = Math.max(maxTemp, data[i].HourlyWetBulbTemperature)
-                    // todo: zonetmp is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
-                    zoneTmp[zip2zone[data[i].zipcode]] = data[i].HourlyWetBulbTemperature;
+                    minLoad = Math.min(minLoad, data[i].zone_load_total);
+                    maxLoad = Math.max(maxLoad, data[i].zone_load_total)
+                    // todo: zoneLoad is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
+                    zoneLoad[zip2zone[data[i].zipcode]] = data[i].zone_load_total;
                 }
             }
             return _data
         }).then((_data) => {
-            var x = d3.scaleLinear()
-                .domain([minTemp, maxTemp])
+            let x = d3.scaleLinear()
+                .domain([minLoad, maxLoad])
                 .range([1, 9]);
 
             let color = d3.scaleThreshold()
                 .domain(d3.range(1, 9))
-                .range(d3.schemeReds[9]);
-
+                .range(d3.schemeBlues[9]);
             this.svg.selectAll("path")
                 .attr("fill", function (d) {
                     let zipcode = d.properties.ZCTA5CE10;
                     let zone = zip2zone[zipcode];
-                    let temperature = zoneTmp[zone];
-                    if (temperature === undefined) {
+                    let load = zoneLoad[zone];
+                    // console.log(color(x(load)))
+                    if (load === undefined) {
                         return "grey"
                     } else {
                         // console.log(x(temperature));
-                        return color(x(temperature));
+                        return color(x(load));
                     }
                 }
                 );
@@ -221,9 +223,8 @@ export default class MapNY extends React.Component {
     render() {
         return (
             <div>
-                <h7>Weather map</h7>
+                <h7>E-load map</h7>
                 <RD3Component data={this.state.d3} />
-                <Divider />
             </div>
         )
     }

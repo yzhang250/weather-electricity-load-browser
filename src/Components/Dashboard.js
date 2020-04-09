@@ -27,6 +27,8 @@ import { Icon } from '@material-ui/core';
 import MapNY from "./MapNY"
 import ListItems from "./ListItems"
 import Welcome from "./Welcome"
+import MapNyEload from './MapNyEload';
+
 
 
 function Copyright() {
@@ -203,7 +205,7 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={12} lg={12}>
               <Paper className={classes.paper}>
-                {welcome?<Welcome/>:<MapNY time={time}/>}
+                {welcome?<Welcome/>:<div><MapNY time={time} /><MapNyEload time={time} /></div>}
               </Paper>
             </Grid>
           </Grid>
