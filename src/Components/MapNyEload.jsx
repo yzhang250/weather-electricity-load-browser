@@ -5,7 +5,7 @@ import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
 import { feature } from "topojson-client"
 // import { planarRingArea } from "topojson";
-import data from "../data/combined _cleaned.csv"
+import data from "../data/sample.csv"
 import zip2zone_data from '../data/ny_zone_zip.csv';
 
 const RD3Component = rd3.Component;
@@ -22,11 +22,11 @@ export default class MapNyEload extends React.Component {
             zip2zone: {},
         }
     }
-    width = 1100 * .75;
+    width = 1300 * .75;
     height = 550 * .75;
 
     node = document.createElement('div');
-    projection = d3.geoMercator().center([-76.5, 42.3]).scale(5000 * .75);
+    projection = d3.geoMercator().center([-82.5, 42.3]).scale(3500 * .75);
     path = d3.geoPath().projection(this.projection);
 
 
@@ -89,8 +89,8 @@ export default class MapNyEload extends React.Component {
                             return
                         }
                         response.json().then(topology => {
-                            var geojson = feature(topology, topology.objects.NYS_zip);
-                            let x = d3.scaleLinear()
+                            let geojson = feature(topology, topology.objects.NYS_zip);
+                            let x = d3.scaleLog()
                                 .domain([minLoad, maxLoad])
                                 .range([1, 9]);
 
@@ -119,8 +119,7 @@ export default class MapNyEload extends React.Component {
                                 );
                         }).then(() => {
                             this.setState({ d3: this.node })
-                        }
-                        )
+                        })
                     }
                 )
             })).catch(function (err) {
@@ -172,7 +171,7 @@ export default class MapNyEload extends React.Component {
             }
             return _data
         }).then((_data) => {
-            let x = d3.scaleLinear()
+            let x = d3.scaleLog()
                 .domain([minLoad, maxLoad])
                 .range([1, 9]);
 

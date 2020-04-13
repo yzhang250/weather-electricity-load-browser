@@ -205,7 +205,7 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={12} lg={12}>
               <Paper className={classes.paper}>
-                {welcome?<Welcome/>:<div><MapNY time={time} /><MapNyEload time={time} /></div>}
+                {welcome?<Welcome/>:<div><MapNY time={time} /></div>}
               </Paper>
             </Grid>
           </Grid>
