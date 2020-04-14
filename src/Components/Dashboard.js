@@ -19,12 +19,16 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Github from '@material-ui/icons/GitHub';
-import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import MapChart from "./MapChart";
 import { Icon } from '@material-ui/core';
+import MapNY from "./MapNY"
+import ListItems from "./ListItems"
+import Welcome from "./Welcome"
+import MapNyEload from './MapNyEload';
+
 
 
 function Copyright() {
@@ -40,7 +44,7 @@ function Copyright() {
   );
 }
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,12 +128,28 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [welcome, setWelcome] = React.useState(true);
+  const [time, setTime] = React.useState("");
+
+  const onTimeChange = (value) => {
+    setTime(value);
+    console.log(value);
+  }
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const turnOffWelcome = () => {
+    setWelcome(false);
+  }
+
+  const turnOnWelcome = () => {
+    setWelcome(true);
+  }
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
@@ -173,9 +193,10 @@ export default function Dashboard() {
         </div>
 
         <Divider />
-        <List>{mainListItems}</List>
-        {/* <Divider /> */}
-        {/* <List>{secondaryListItems}</List> */}
+        <ListItems open={open} 
+        turnOnWelcome={turnOnWelcome} 
+        turnOffWelcome={turnOffWelcome}
+        onTimeChange={onTimeChange}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -184,21 +205,9 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={12} lg={12}>
               <Paper className={classes.paper}>
-                <MapChart />
+                {welcome?<Welcome/>:<div><MapNY time={time} /></div>}
               </Paper>
             </Grid>
-            {/* Recent Deposits */}
-            {/* <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid> */}
-            {/* Recent Orders */}
-            {/* <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
-              </Paper>
-            </Grid> */}
           </Grid>
           <Box pt={4}>
             <Copyright />
