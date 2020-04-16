@@ -384,27 +384,6 @@ export default class MapNY extends React.Component {
 
     }
 
-    handleTimeChange = (time) => {
-        // this.svg.selectAll("path")
-        // // .data(geojson.features)
-        // // .enter().append("path")
-        // .attr("fill", "grey")
-        // .attr("d", this.path)
-        // .attr("fill", function (d) {
-        //     if (parseInt(d.properties.ZCTA5CE10) % 4 == 1) {
-        //         return colors[0]
-        //     } else if (parseInt(d.properties.ZCTA5CE10) % 4 == 2) {
-        //         return colors[1]
-        //     } else if (parseInt(d.properties.ZCTA5CE10) % 4 == 3) {
-        //         return colors[2]
-        //     } else {
-        //         return colors[3]
-        //     }
-        // });
-
-        this.setState({ d3: this.node });
-    }
-
     render() {
         return (
             <div>

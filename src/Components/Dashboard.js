@@ -28,6 +28,7 @@ import MapNY from "./MapNY"
 import ListItems from "./ListItems"
 import Welcome from "./Welcome"
 import MapNyEload from './MapNyEload';
+import PredLineChart from './PredLineChart';
 
 
 
@@ -130,10 +131,27 @@ export default function Dashboard() {
   const [open, setOpen] = React.useState(false);
   const [welcome, setWelcome] = React.useState(true);
   const [time, setTime] = React.useState("");
+  const [zip, setZip] = React.useState("");
+  const [showPred, setShowPred] = React.useState(false);
+
+  const turnOffPred = () =>{
+    setShowPred(false)
+  }
+
+  const turnOnPred = () =>{
+    setShowPred(true)
+  }
+
+
 
   const onTimeChange = (value) => {
     setTime(value);
     console.log(value);
+  }
+
+  const onZipChange = (value) => {
+    setZip(value);
+    // console.log(value);
   }
 
   const handleDrawerOpen = () => {
@@ -196,7 +214,10 @@ export default function Dashboard() {
         <ListItems open={open} 
         turnOnWelcome={turnOnWelcome} 
         turnOffWelcome={turnOffWelcome}
-        onTimeChange={onTimeChange}/>
+        onTimeChange={onTimeChange}
+        onZipChange={onZipChange}
+        turnOnPred = {turnOnPred}
+        turnOffPred={turnOffPred} />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -204,8 +225,8 @@ export default function Dashboard() {
           <Grid container spacing={3}>
             {/* Chart */}
             <Grid item xs={12} md={12} lg={12}>
-              <Paper className={classes.paper}>
-                {welcome?<Welcome/>:<div><MapNY time={time} /></div>}
+              <Paper className={classes.paper}>                
+              {welcome?<Welcome/>:showPred?<div><PredLineChart zipcode={zip} /></div>:<div><MapNY time={time} /></div>}
               </Paper>
             </Grid>
           </Grid>
