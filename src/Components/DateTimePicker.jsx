@@ -17,6 +17,7 @@ export default class DateTimePicker extends Component {
     }
     onClick = (e) => {
         this.props.turnOffWelcome();
+        this.props.turnOffPred();
         this.props.onTimeChange(this.state.value);
      }
     
