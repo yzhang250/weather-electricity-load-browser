@@ -82,7 +82,7 @@ export default class MapNY extends React.Component {
         let maxLoad = 800;
 
         let t = timeCovert(this.state.time);
-        console.log("my t:" + t)
+        console.log("did mount"+this.props.time)
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
             return choices[index];
@@ -266,6 +266,7 @@ export default class MapNY extends React.Component {
         let minTemp = 100;
         let maxTemp = -20;
         let t = timeCovert(this.props.time);
+        console.log(this.props.time)
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
             return choices[index];

@@ -8,7 +8,7 @@ export default class ZipcodeTextField extends Component {
         super(props)
     
         this.state = {
-             value: ""
+             value: "10001"
         }
     }
 

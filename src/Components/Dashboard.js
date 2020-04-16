@@ -131,7 +131,7 @@ export default function Dashboard() {
   const [open, setOpen] = React.useState(false);
   const [welcome, setWelcome] = React.useState(true);
   const [time, setTime] = React.useState("");
-  const [zip, setZip] = React.useState("");
+  const [zip, setZip] = React.useState("10001");
   const [showPred, setShowPred] = React.useState(false);
 
   const turnOffPred = () =>{
@@ -141,8 +141,6 @@ export default function Dashboard() {
   const turnOnPred = () =>{
     setShowPred(true)
   }
-
-
 
   const onTimeChange = (value) => {
     setTime(value);
