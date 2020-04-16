@@ -128,11 +128,16 @@ export default class PredLineChart extends React.Component {
         var isholiday = isHoliday(year, month, day);
         var weatherData = getNext12HoursWeather(zipcode);
         var weekDay = getDayOfWeek(year, month, day)
-        var zone = ZONES[7]
+        var zone = "N.Y.C"
+        d3.csv(zip2zone_data).then(function (data) {
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].zipcode == zipcode) {
+                    zone = data[i].zone;
+                }
+            }
+        })
 
         // Added for line graph
-
-
 
         var x = d3.scalePoint().range([0, this.width]);
         var y0 = d3.scaleLinear().range([this.height, 0]);
@@ -449,10 +454,10 @@ export default class PredLineChart extends React.Component {
         const ZONES = ["CAPITL", "CENTRL", "DUNWOD", "GENESE", "HUD VL", "LONGIL", "MHK VL", "N.Y.C.", "NORTH", "WEST"]
 
 
-        var zone = "N.Y.C" 
+        var zone = "N.Y.C"
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
-                if (data[i].zipcode == zipcode){
+                if (data[i].zipcode == zipcode) {
                     zone = data[i].zone;
                 }
             }
@@ -586,7 +591,7 @@ export default class PredLineChart extends React.Component {
                         var x_range = load.filter(l => l.zipcode == zipcode).map(i => i.hour);
 
                         var a = d3.extent(load, function (d) { return d.hour; });
-                        console.log("xrange",x_range);
+                        console.log("xrange", x_range);
 
                         x.domain(x_range);
                         y0.domain([load_min, load_max]);
@@ -683,9 +688,9 @@ export default class PredLineChart extends React.Component {
                             .style("font-size", "16px")
                             .style("font-weight", "bold")
                             .style("font-family", "sans-serif")
-                            .text("Temperature and Predicted Load of Next 12 Hours UPDATED")
+                            .text("Temperature and Predicted Load of Next 12 Hours")
 
-                       
+
                         // this.svg.append("text")
                         //     .attr("x", (this.width / 2))
                         //     .attr("y", 0 - (this.margin.top / 2) + 15)
