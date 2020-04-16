@@ -101,12 +101,12 @@ export default class PredLineChart extends React.Component {
                 'GlobalParameters': {}
             }
             console.log(inputData)
-            let response = await axios.create({
+            let response = await axios({
                 method: 'post',
                 url: baseUrl,
                 headers: headersIn,
                 data: inputData
-            })
+            });
 
             return response;
         }
@@ -176,10 +176,10 @@ export default class PredLineChart extends React.Component {
                 console.log(inputDatas);
                 var predictResponse = getPredict(inputDatas);
                
-                
-                predictResponse.then(function(response){ return response.json(); }).then(Data => {
-                    console.log(Data)
-                    let predictDatas = Data.data.Results.output1.value.Values;
+                console.log(predictResponse)
+                predictResponse.then(response => {
+                    console.log(response)
+                    let predictDatas = response.data.Results.output1.value.Values;
                     // data processing for line charts
                     var results = predictDatas.map(function (p) {
                         return {
@@ -422,7 +422,7 @@ export default class PredLineChart extends React.Component {
                 'GlobalParameters': {}
             }
             console.log(inputData)
-            let response = await axios.create({
+            let response = await axios({
                 method: 'post',
                 url: baseUrl,
                 headers: headersIn,
