@@ -449,7 +449,14 @@ export default class PredLineChart extends React.Component {
         const ZONES = ["CAPITL", "CENTRL", "DUNWOD", "GENESE", "HUD VL", "LONGIL", "MHK VL", "N.Y.C.", "NORTH", "WEST"]
 
 
-        var zone = ZONES[7]
+        var zone = "N.Y.C" 
+        d3.csv(zip2zone_data).then(function (data) {
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].zipcode == zipcode){
+                    zone = data[i].zone;
+                }
+            }
+        })
 
 
         var isholiday = isHoliday(year, month, day);
