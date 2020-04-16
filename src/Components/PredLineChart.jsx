@@ -46,7 +46,7 @@ export default class PredLineChart extends React.Component {
         let year = today.getFullYear()
         let month = today.getMonth() + 1
         let day = today.getDate()
-        let zipcode = this.state.zipcode
+        let zipcode = this.props.zipcode
         console.log(zipcode)
         async function getNext12HoursWeather(zipCode) {
             let baseUrl = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/";
@@ -122,22 +122,28 @@ export default class PredLineChart extends React.Component {
         const ZONES = ["CAPITL", "CENTRL", "DUNWOD", "GENESE", "HUD VL", "LONGIL", "MHK VL", "N.Y.C.", "NORTH", "WEST"]
 
 
-        // var zone = ZONES[7]
-
-
-        var isholiday = isHoliday(year, month, day);
-        var weatherData = getNext12HoursWeather(zipcode);
-        var weekDay = getDayOfWeek(year, month, day)
         var zone = "N.Y.C"
-        d3.csv(zip2zone_data).then(function (data) {
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].zipcode == zipcode) {
-                    zone = data[i].zone;
-                }
-            }
-        })
+        // if (zipcode < 10501) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 10901){
+        //     zone = "DUNWOD"
+        // } else if (zipcode < 11001){
+        //     zone = "HUD VL"
+        // } else if (zipcode < 11101){
+        //     zone = "LONGIL"
+        // } else if (zipcode < 11501) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 11690) {
+        //     zone = "LONGIL"
+        // } else if (zipcode < 11701) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 12007) {
+        //     zone = "LONGIL"
+        // }
 
         // Added for line graph
+
+
 
         var x = d3.scalePoint().range([0, this.width]);
         var y0 = d3.scaleLinear().range([this.height, 0]);
@@ -146,76 +152,85 @@ export default class PredLineChart extends React.Component {
 
 
         // Original code from Xiguang
-        isholiday.then(holiday => {
-            weatherData.then(weathers => {
-                let holidayVar = holiday ? "Y" : "N";
-                let weathersData = [];
-                weathers.forEach(weather => {
-                    let w = {
-                        dateTime: new Date(weather["DateTime"]),
-                        Temperature: weather["Temperature"]["Value"],
-                        WindSpeed: weather["Wind"]["Speed"]["Value"]
-                    };
-                    weathersData.push(w);
-                });
-                // console.log(zone);
-                // console.log(month);
-                // console.log(weekDay);
-                // console.log(holidayVar);
-                // console.log(weathersData);
-                let inputDatas = [];
-                weathersData.forEach(data => {
-                    let input = [
-                        zone,
-                        month.toString(),
-                        data["dateTime"].getHours().toString(),
-                        weekDay,
-                        holidayVar,
-                        data["Temperature"].toString(),
-                        data["WindSpeed"].toString(),
-                        "0"
-                    ];
-                    inputDatas.push(input);
-                });
 
-                console.log(inputDatas);
-                var predictResponse = getPredict(inputDatas);
 
-                console.log(predictResponse)
-                predictResponse.then(response => {
-                    // console.log(response)
-                    let predictDatas = response.data.Results.output1.value.Values;
-                    // data processing for line charts
-                    var results = predictDatas.map(function (p) {
-                        return {
-                            "zone": p[0],
-                            "Month": +p[1],
-                            "Hour": +p[2],
-                            "Weekday": p[3],
-                            "Holiday": p[4],
-                            "Temperature": +p[5],
-                            "WindSpeed": +p[6],
-                            "ZoneLoad": +p[7],
-                            "predict": +p[8]
-                        }
+        d3.csv(zip2zone_data).then(dt => {
+            dt.forEach(function (d) {
+                d.zipcode = +d.zipcode;
+                d.population_zone_pct = +d.population_zone_pct;
+            });
+            console.log(dt);
+
+            var selected_zone = dt.filter(z => z.zipcode == zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
+            console.log(selected_zone);
+
+            var pop_pram = dt.filter(z => z.zipcode == zipcode).map(i => i.population_zone_pct)[0];
+            console.log(pop_pram);
+
+
+            var isholiday = isHoliday(year, month, day);
+            var weatherData = getNext12HoursWeather(zipcode);
+            var weekDay = getDayOfWeek(year, month, day)
+
+
+            // Original code from Xiguang
+            isholiday.then(holiday => {
+                weatherData.then(weathers => {
+                    let holidayVar = holiday ? "Y" : "N";
+                    let weathersData = [];
+                    weathers.forEach(weather => {
+                        let w = {
+                            dateTime: new Date(weather["DateTime"]),
+                            Temperature: weather["Temperature"]["Value"],
+                            WindSpeed: weather["Wind"]["Speed"]["Value"]
+                        };
+                        weathersData.push(w);
                     });
-                    // console.log(results);
+                    // console.log(zone);
+                    // console.log(month);
+                    // console.log(weekDay);
+                    // console.log(holidayVar);
+                    // console.log(weathersData);
+                    let inputDatas = [];
+                    weathersData.forEach(data => {
+                        let input = [
+                            selected_zone,
+                            month.toString(),
+                            data["dateTime"].getHours().toString(),
+                            weekDay,
+                            holidayVar,
+                            data["Temperature"].toString(),
+                            data["WindSpeed"].toString(),
+                            "0"
+                        ];
+                        inputDatas.push(input);
+                    });
+
+                    // console.log(inputDatas);
+                    var predictResponse = getPredict(inputDatas);
 
 
-                    d3.csv(zip2zone_data).then(dt => {
-                        dt.forEach(function (d) {
-                            d.zipcode = +d.zipcode;
-                            d.population_zone_pct = +d.population_zone_pct;
+                    predictResponse.then(response => {
+                        let predictDatas = response.data.Results.output1.value.Values;
+                        // data processing for line charts
+                        var results = predictDatas.map(function (p) {
+                            return {
+                                "zone": p[0],
+                                "Month": +p[1],
+                                "Hour": +p[2],
+                                "Weekday": p[3],
+                                "Holiday": p[4],
+                                "Temperature": +p[5],
+                                "WindSpeed": +p[6],
+                                "ZoneLoad": +p[7],
+                                "predict": +p[8]
+                            }
                         });
-                        console.log(dt);
+                        console.log(results);
 
-                        var selected_zone = dt.filter(z => z.zipcode == zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
-                        // console.log(selected_zone);
 
-                        var pop_pram = dt.filter(z => z.zipcode == zipcode).map(i => i.population_zone_pct)[0];
-                        // console.log(pop_pram);
 
-                        var load = results.filter(r => r.zone === selected_zone).map(function (i) {
+                        var load = results.filter(r => r.zone == selected_zone).map(function (i) {
                             return {
                                 "zipcode": zipcode, //change
                                 "zone": selected_zone,
@@ -226,7 +241,7 @@ export default class PredLineChart extends React.Component {
                             }
                         });
 
-                        // console.log(load)
+                        // console.log(load.length)
 
 
                         var yaxis0 = d3.axisLeft()
@@ -248,10 +263,8 @@ export default class PredLineChart extends React.Component {
                         var temp_min = d3.min(load, function (d) { return d.temperature; });
                         var temp_max = d3.max(load, function (d) { return d.temperature; });
 
-                        // console.log(load_min);
-                        // console.log(load_max);
-                        // console.log(temp_min);
-                        // console.log(temp_max);
+                        console.log(load_min);
+                        console.log(load_max);
                         var x_range = load.filter(l => l.zipcode == zipcode).map(i => i.hour);
 
                         var a = d3.extent(load, function (d) { return d.hour; });
@@ -315,7 +328,6 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "red")
                             .attr("r", 5);
 
-
                         this.svg.append("text")
                             .attr("transform",
                                 "translate(" + (this.width / 2) + " ," +
@@ -353,14 +365,14 @@ export default class PredLineChart extends React.Component {
                             .style("font-family", "sans-serif")
                             .text("Temperature and Predicted Load of Next 12 Hours")
 
-                        // this.svg.append("text")
-                        //     .attr("x", (this.width / 2))
-                        //     .attr("y", 0 - (this.margin.top / 2) + 15)
-                        //     .attr("text-anchor", "middle")
-                        //     .style("font-size", "16px")
-                        //     .style("font-weight", "bold")
-                        //     .style("font-family", "sans-serif")
-                        //     .text("Zipcode " + zipcode + " in LoadZone " + zone);
+                        // svg.append("text")
+                        //         .attr("x", (width / 2))
+                        //         .attr("y", 0 - (margin.top / 2) + 15)
+                        //         .attr("text-anchor", "middle")
+                        //         .style("font-size", "16px")
+                        //         .style("font-weight","bold")
+                        //         .style("font-family","sans-serif")
+                        //         .text("Zipcode " + zipcode + " in LoadZone " + selected_zone);
 
                     })
                         .then(() => { this.setState({ d3: this.node }) }
@@ -455,18 +467,23 @@ export default class PredLineChart extends React.Component {
 
 
         var zone = "N.Y.C"
-        d3.csv(zip2zone_data).then(function (data) {
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].zipcode == zipcode) {
-                    zone = data[i].zone;
-                }
-            }
-        })
-
-
-        var isholiday = isHoliday(year, month, day);
-        var weatherData = getNext12HoursWeather(zipcode);
-        var weekDay = getDayOfWeek(year, month, day)
+        // if (zipcode < 10501) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 10901){
+        //     zone = "DUNWOD"
+        // } else if (zipcode < 11001){
+        //     zone = "HUD VL"
+        // } else if (zipcode < 11101){
+        //     zone = "LONGIL"
+        // } else if (zipcode < 11501) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 11690) {
+        //     zone = "LONGIL"
+        // } else if (zipcode < 11701) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 12007) {
+        //     zone = "LONGIL"
+        // }
 
         // Added for line graph
 
@@ -479,76 +496,83 @@ export default class PredLineChart extends React.Component {
 
 
         // Original code from Xiguang
-        isholiday.then(holiday => {
-            weatherData.then(weathers => {
-                let holidayVar = holiday ? "Y" : "N";
-                let weathersData = [];
-                weathers.forEach(weather => {
-                    let w = {
-                        dateTime: new Date(weather["DateTime"]),
-                        Temperature: weather["Temperature"]["Value"],
-                        WindSpeed: weather["Wind"]["Speed"]["Value"]
-                    };
-                    weathersData.push(w);
-                });
-                // console.log(zone);
-                // console.log(month);
-                // console.log(weekDay);
-                // console.log(holidayVar);
-                // console.log(weathersData);
-                let inputDatas = [];
-                weathersData.forEach(data => {
-                    let input = [
-                        zone,
-                        month.toString(),
-                        data["dateTime"].getHours().toString(),
-                        weekDay,
-                        holidayVar,
-                        data["Temperature"].toString(),
-                        data["WindSpeed"].toString(),
-                        "0"
-                    ];
-                    inputDatas.push(input);
-                });
 
-                console.log(inputDatas);
-                var predictResponse = getPredict(inputDatas);
 
-                console.log(predictResponse)
-                predictResponse.then(response => {
-                    // console.log(response)
-                    let predictDatas = response.data.Results.output1.value.Values;
-                    // data processing for line charts
-                    var results = predictDatas.map(function (p) {
-                        return {
-                            "zone": p[0],
-                            "Month": +p[1],
-                            "Hour": +p[2],
-                            "Weekday": p[3],
-                            "Holiday": p[4],
-                            "Temperature": +p[5],
-                            "WindSpeed": +p[6],
-                            "ZoneLoad": +p[7],
-                            "predict": +p[8]
-                        }
+        d3.csv(zip2zone_data).then(dt => {
+            dt.forEach(function (d) {
+                d.zipcode = +d.zipcode;
+                d.population_zone_pct = +d.population_zone_pct;
+            });
+            console.log(dt);
+
+            var selected_zone = dt.filter(z => z.zipcode == zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
+            console.log(selected_zone);
+
+            var pop_pram = dt.filter(z => z.zipcode == zipcode).map(i => i.population_zone_pct)[0];
+            console.log(pop_pram);
+
+
+            var isholiday = isHoliday(year, month, day);
+            var weatherData = getNext12HoursWeather(zipcode);
+            var weekDay = getDayOfWeek(year, month, day)
+
+
+            // Original code from Xiguang
+            isholiday.then(holiday => {
+                weatherData.then(weathers => {
+                    let holidayVar = holiday ? "Y" : "N";
+                    let weathersData = [];
+                    weathers.forEach(weather => {
+                        let w = {
+                            dateTime: new Date(weather["DateTime"]),
+                            Temperature: weather["Temperature"]["Value"],
+                            WindSpeed: weather["Wind"]["Speed"]["Value"]
+                        };
+                        weathersData.push(w);
                     });
-                    console.log("pred result")
-                    console.log(results);
+                    // console.log(zone);
+                    // console.log(month);
+                    // console.log(weekDay);
+                    // console.log(holidayVar);
+                    // console.log(weathersData);
+                    let inputDatas = [];
+                    weathersData.forEach(data => {
+                        let input = [
+                            selected_zone,
+                            month.toString(),
+                            data["dateTime"].getHours().toString(),
+                            weekDay,
+                            holidayVar,
+                            data["Temperature"].toString(),
+                            data["WindSpeed"].toString(),
+                            "0"
+                        ];
+                        inputDatas.push(input);
+                    });
+
+                    // console.log(inputDatas);
+                    var predictResponse = getPredict(inputDatas);
 
 
-                    d3.csv(zip2zone_data).then(dt => {
-                        dt.forEach(function (d) {
-                            d.zipcode = +d.zipcode;
-                            d.population_zone_pct = +d.population_zone_pct;
+                    predictResponse.then(response => {
+                        let predictDatas = response.data.Results.output1.value.Values;
+                        // data processing for line charts
+                        var results = predictDatas.map(function (p) {
+                            return {
+                                "zone": p[0],
+                                "Month": +p[1],
+                                "Hour": +p[2],
+                                "Weekday": p[3],
+                                "Holiday": p[4],
+                                "Temperature": +p[5],
+                                "WindSpeed": +p[6],
+                                "ZoneLoad": +p[7],
+                                "predict": +p[8]
+                            }
                         });
-                        console.log(dt);
+                        console.log(results);
 
-                        var selected_zone = dt.filter(z => z.zipcode == zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
-                        console.log("updated slected_zone")
-                        console.log(selected_zone);
 
-                        var pop_pram = dt.filter(z => z.zipcode == zipcode).map(i => i.population_zone_pct)[0];
-                        // console.log(pop_pram);
 
                         var load = results.filter(r => r.zone == selected_zone).map(function (i) {
                             return {
@@ -560,9 +584,8 @@ export default class PredLineChart extends React.Component {
                                 "pload": i.predict * pop_pram
                             }
                         });
-                        console.log("updated load")
 
-                        console.log(load)
+                        // console.log(load.length)
 
 
                         var yaxis0 = d3.axisLeft()
@@ -586,12 +609,10 @@ export default class PredLineChart extends React.Component {
 
                         // console.log(load_min);
                         // console.log(load_max);
-                        // console.log(temp_min);
-                        // console.log(temp_max);
                         var x_range = load.filter(l => l.zipcode == zipcode).map(i => i.hour);
 
                         var a = d3.extent(load, function (d) { return d.hour; });
-                        console.log("xrange", x_range);
+                        // console.log("xrange",x_range);
 
                         x.domain(x_range);
                         y0.domain([load_min, load_max]);
@@ -607,8 +628,7 @@ export default class PredLineChart extends React.Component {
                             .y(function (d) { return y1(d.temperature); })
                             .curve(d3.curveMonotoneX);
 
-                        this.svg.selectAll("*").remove()
-
+                        this.svg.selectAll("*").remove();
                         this.svg.append("path")
                             .style("stroke", "steelblue")
                             .style("fill", "none")
@@ -652,7 +672,6 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "red")
                             .attr("r", 5);
 
-
                         this.svg.append("text")
                             .attr("transform",
                                 "translate(" + (this.width / 2) + " ," +
@@ -690,25 +709,24 @@ export default class PredLineChart extends React.Component {
                             .style("font-family", "sans-serif")
                             .text("Temperature and Predicted Load of Next 12 Hours")
 
-
-                        // this.svg.append("text")
-                        //     .attr("x", (this.width / 2))
-                        //     .attr("y", 0 - (this.margin.top / 2) + 15)
-                        //     .attr("text-anchor", "middle")
-                        //     .style("font-size", "16px")
-                        //     .style("font-weight", "bold")
-                        //     .style("font-family", "sans-serif")
-                        //     .text("Zipcode " + zipcode + " in LoadZone " + zone);
+                        // svg.append("text")
+                        //         .attr("x", (width / 2))
+                        //         .attr("y", 0 - (margin.top / 2) + 15)
+                        //         .attr("text-anchor", "middle")
+                        //         .style("font-size", "16px")
+                        //         .style("font-weight","bold")
+                        //         .style("font-family","sans-serif")
+                        //         .text("Zipcode " + zipcode + " in LoadZone " + selected_zone);
 
                     })
-                    // .then(() => { this.setState({ d3: this.node }) }
 
-                    // )
+
                 }).catch(function (error) {
                     console.log("error", error);
                 })
             })
         })
+
     }
 
 
