@@ -8,7 +8,7 @@ export default class ZipcodeTextField extends Component {
         super(props)
     
         this.state = {
-             value: "10001"
+             value: this.props.zipcode
         }
     }
 
@@ -22,6 +22,10 @@ export default class ZipcodeTextField extends Component {
      }
     
     render() {
+        // console.log(this.props.zipcode)
+        if (this.state.value !== this.props.zipcode) {
+            this.setState({value:this.props.zipcode})
+        }
         return (
             <div>
                 <form style={{
@@ -31,7 +35,7 @@ export default class ZipcodeTextField extends Component {
                     <TextField 
                     id="standard-basic" 
                     label="Zipcode" 
-                    defaultValue="10001"
+                    value={this.state.value}
                     onChange={this.handleValueChange}
                     />
                     {/* <TextField

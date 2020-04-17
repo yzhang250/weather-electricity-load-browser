@@ -21,7 +21,7 @@ export default class ListItems extends Component {
   }
 
   render() {
-
+    // console.log(this.props.zipcode)
     return (
       <List>
         <ListItem button onClick={this.props.turnOnWelcome}>
@@ -48,7 +48,7 @@ export default class ListItems extends Component {
         </ListItem>
         <Container>
         {this.props.open ? <ZipcodeTextField turnOffWelcome={this.props.turnOffWelcome}
-          onZipChange={this.props.onZipChange} turnOnPred={this.props.turnOnPred} /> : <div />}
+          onZipChange={this.props.onZipChange} turnOnPred={this.props.turnOnPred} zipcode={this.props.zipcode} /> : <div />}
       </Container>
       </List>
     
