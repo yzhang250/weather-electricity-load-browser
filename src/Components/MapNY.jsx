@@ -36,13 +36,13 @@ export default class MapNY extends React.Component {
             }
         }
     }
-    width = 650 * .75;
-    height = 550 * .75;
+    width = 800 * .75;
+    height = 700 * .75;
 
     node = document.createElement('div');
     node_eload = document.createElement('div');
-    projection = d3.geoMercator().center([-70.5, 42.3]).scale(3500 * .75);
-    projection_eload = d3.geoMercator().center([-70.5, 42.3]).scale(3500 * .75);
+    projection = d3.geoMercator().center([-72, 43.5]).scale(4300 * .75);
+    projection_eload = d3.geoMercator().center([-72, 43.5]).scale(4300 * .75);
 
     path = d3.geoPath().projection(this.projection);
     path_eload = d3.geoPath().projection(this.projection_eload);
@@ -82,7 +82,7 @@ export default class MapNY extends React.Component {
         let maxLoad = 800;
 
         let t = timeCovert(this.state.time);
-        console.log("did mount"+this.props.time)
+        console.log("did mount" + this.props.time)
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
             return choices[index];
@@ -136,6 +136,8 @@ export default class MapNY extends React.Component {
                                 .enter().append("path")
                                 // .attr("fill", "grey")
                                 .attr("d", this.path)
+                                .attr("stroke", "black")
+                                .attr("stroke-width", 1)
                                 .attr("fill", function (d) {
                                     let zipcode = d.properties.ZCTA5CE10;
                                     let zone = zip2zone[zipcode];
@@ -151,8 +153,18 @@ export default class MapNY extends React.Component {
 
                                 }
                                 )
+                                // .on("mouseover", (d) => {d3.select(d.properties)
+                                //     .transition()
+                                //     .duration(200)
+                                //     .style("opacity", 1)
+                                //     .style("stroke-width", 2)})
+                                // .on("mouseout", (d) => {d3.select(d.properties)
+                                //     .transition()
+                                //     .duration(200)
+                                //     .style("stroke-width", 1)})
                                 .on("click", d => {
                                     // console.log(d.properties.ZCTA5CE10);
+                                    this.props.onZipChange(d.properties.ZCTA5CE10);
                                     this.setState({
                                         weatherData: {
                                             zipcode: d.properties.ZCTA5CE10,
@@ -193,6 +205,8 @@ export default class MapNY extends React.Component {
                                 .enter().append("path")
                                 // .attr("fill", "grey")
                                 .attr("d", this.path_eload)
+                                .attr("stroke", "black")
+                                .attr("stroke-width", 1)
                                 .attr("fill", function (d) {
                                     let zipcode = d.properties.ZCTA5CE10;
                                     let zone = zip2zone[zipcode];
@@ -207,6 +221,7 @@ export default class MapNY extends React.Component {
                                 )
                                 .on("click", d => {
                                     // console.log(d.properties.ZCTA5CE10);
+                                    this.props.onZipChange(d.properties.ZCTA5CE10);
                                     this.setState({
                                         weatherData: {
                                             zipcode: d.properties.ZCTA5CE10,
@@ -320,6 +335,7 @@ export default class MapNY extends React.Component {
                 })
                 .on("click", d => {
                     // console.log(d.properties.ZCTA5CE10);
+                    this.props.onZipChange(d.properties.ZCTA5CE10);
                     this.setState({
                         weatherData: {
                             zipcode: d.properties.ZCTA5CE10,
@@ -367,6 +383,7 @@ export default class MapNY extends React.Component {
                 )
                 .on("click", d => {
                     // console.log(d.properties.ZCTA5CE10);
+                    this.props.onZipChange(d.properties.ZCTA5CE10);
                     this.setState({
                         weatherData: {
                             zipcode: d.properties.ZCTA5CE10,
@@ -389,8 +406,8 @@ export default class MapNY extends React.Component {
         return (
             <div>
                 <WeatherDataCard data={this.state.weatherData} />
-                <br/>
-                
+                <br />
+
                 <Paper elevation={1} >
                     <Grid container spacing={3}>
                         <Grid item xs={6}><RD3Component data={this.state.d3} /></Grid>

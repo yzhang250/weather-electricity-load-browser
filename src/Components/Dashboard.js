@@ -29,6 +29,7 @@ import ListItems from "./ListItems"
 import Welcome from "./Welcome"
 import MapNyEload from './MapNyEload';
 import PredLineChart from './PredLineChart';
+import EmailIcon from '@material-ui/icons/Email';
 
 
 
@@ -128,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [welcome, setWelcome] = React.useState(true);
   const [time, setTime] = React.useState("");
   const [zip, setZip] = React.useState("10001");
@@ -144,12 +145,12 @@ export default function Dashboard() {
 
   const onTimeChange = (value) => {
     setTime(value);
-    console.log(value);
+    // console.log(value);
   }
 
   const onZipChange = (value) => {
     setZip(value);
-    // console.log(value);
+    // console.log(zip);
   }
 
   const handleDrawerOpen = () => {
@@ -173,7 +174,7 @@ export default function Dashboard() {
       <CssBaseline />
       <AppBar color="grey" position="absolute" className={clsx(classes.appBar, false && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-          <IconButton
+          {/* <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
@@ -181,12 +182,20 @@ export default function Dashboard() {
             className={clsx(classes.menuButton, false && classes.menuButtonHidden)}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <img height="75" src={ require('../logo.png') } />
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {/* <span style={{ color: "yellow", fontSize: "30px", fontStyle: "italic" }}>WE</span>  */}
             {/* browser */}
           </Typography>
+          <IconButton color="inherit">
+            <Badge color="secondary">
+              <a href="mailto:yzhang250@gmail.com" target="_blank" rel="noopener noreferrer" style={{ color: "black" }}>
+                <EmailIcon style={{ fontSize: 25 }} />
+              </a>
+
+            </Badge>
+          </IconButton>
           <IconButton color="inherit">
             <Badge color="secondary">
               <a href="https://github.com/yzhang250/weather-electricity-load-browser" target="_blank" rel="noopener noreferrer" style={{color:"black"}}>
@@ -202,7 +211,7 @@ export default function Dashboard() {
         classes={{
           paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
-        open={open}
+        open={true}
       >
         <div className={classes.toolbarIcon}>
 
@@ -215,7 +224,8 @@ export default function Dashboard() {
         onTimeChange={onTimeChange}
         onZipChange={onZipChange}
         turnOnPred = {turnOnPred}
-        turnOffPred={turnOffPred} />
+        turnOffPred={turnOffPred} 
+        zipcode={zip}/>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -224,7 +234,7 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={12} lg={12}>
               <Paper className={classes.paper}>                
-              {welcome?<Welcome/>:showPred?<div><PredLineChart zipcode={zip} /></div>:<div><MapNY time={time} /></div>}
+              {welcome?<Welcome/>:showPred?<div><PredLineChart zipcode={zip} /></div>:<div><MapNY time={time} onZipChange={onZipChange}/></div>}
               </Paper>
             </Grid>
           </Grid>
