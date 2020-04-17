@@ -3,12 +3,12 @@ import Button from '@material-ui/core/Button';
 import React, { Component } from 'react'
 
 
-export default class DateTimePicker extends Component {
+export default class ZipcodeTextField extends Component {
     constructor(props) {
         super(props)
     
         this.state = {
-             value: "2015-01-01T01:00"
+             value: "10001"
         }
     }
 
@@ -17,8 +17,8 @@ export default class DateTimePicker extends Component {
     }
     onClick = (e) => {
         this.props.turnOffWelcome();
-        this.props.turnOffPred();
-        this.props.onTimeChange(this.state.value);
+        this.props.turnOnPred();
+        this.props.onZipChange(this.state.value);
      }
     
     render() {
@@ -28,11 +28,17 @@ export default class DateTimePicker extends Component {
                     display: 'flex',
                     flexWrap: 'wrap',
                 }} noValidate>
-                    <TextField
+                    <TextField 
+                    id="standard-basic" 
+                    label="Zipcode" 
+                    defaultValue="10001"
+                    onChange={this.handleValueChange}
+                    />
+                    {/* <TextField
                         id="datetime-local"
                         label="Time to view"
                         type="datetime-local"
-                        defaultValue="2015-01-01T01:00"
+                        
                         style={{
                             marginLeft: 4,
                             marginRight: 4,
@@ -43,7 +49,7 @@ export default class DateTimePicker extends Component {
                             shrink: true,
                         }}
                         onChange={this.handleValueChange}
-                    />
+                    /> */}
                 </form>
                 <Button variant="contained" style={{marginTop:20, marginLeft:60}} onClick={this.onClick}>Submit</Button>
             </div>

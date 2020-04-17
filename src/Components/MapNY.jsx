@@ -82,7 +82,7 @@ export default class MapNY extends React.Component {
         let maxLoad = 800;
 
         let t = timeCovert(this.state.time);
-        console.log("my t:" + t)
+        console.log("did mount"+this.props.time)
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
             return choices[index];
@@ -266,6 +266,7 @@ export default class MapNY extends React.Component {
         let minTemp = 100;
         let maxTemp = -20;
         let t = timeCovert(this.props.time);
+        console.log(this.props.time)
         function choose(choices) {
             var index = Math.floor(Math.random() * choices.length);
             return choices[index];
@@ -382,27 +383,6 @@ export default class MapNY extends React.Component {
             throw err;
         })
 
-    }
-
-    handleTimeChange = (time) => {
-        // this.svg.selectAll("path")
-        // // .data(geojson.features)
-        // // .enter().append("path")
-        // .attr("fill", "grey")
-        // .attr("d", this.path)
-        // .attr("fill", function (d) {
-        //     if (parseInt(d.properties.ZCTA5CE10) % 4 == 1) {
-        //         return colors[0]
-        //     } else if (parseInt(d.properties.ZCTA5CE10) % 4 == 2) {
-        //         return colors[1]
-        //     } else if (parseInt(d.properties.ZCTA5CE10) % 4 == 3) {
-        //         return colors[2]
-        //     } else {
-        //         return colors[3]
-        //     }
-        // });
-
-        this.setState({ d3: this.node });
     }
 
     render() {

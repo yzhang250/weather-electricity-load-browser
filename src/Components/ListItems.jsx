@@ -9,6 +9,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import Container from '@material-ui/core/Container';
 import DateTimePicker from "./DateTimePicker"
 import React, { Component } from 'react'
+import ZipcodeTextField from './ZipcodeTextField';
 
 export default class ListItems extends Component {
   constructor(props) {
@@ -37,7 +38,7 @@ export default class ListItems extends Component {
         </ListItem>
         <Container>
           {this.props.open ? <DateTimePicker turnOffWelcome={this.props.turnOffWelcome}
-          onTimeChange={this.props.onTimeChange}/> : <div />}
+            onTimeChange={this.props.onTimeChange} turnOffPred={this.props.turnOffPred}/> : <div />}
         </Container>
         <ListItem>
           <ListItemIcon>
@@ -45,7 +46,12 @@ export default class ListItems extends Component {
           </ListItemIcon>
           <ListItemText primary="Prediction" />
         </ListItem>
+        <Container>
+        {this.props.open ? <ZipcodeTextField turnOffWelcome={this.props.turnOffWelcome}
+          onZipChange={this.props.onZipChange} turnOnPred={this.props.turnOnPred} /> : <div />}
+      </Container>
       </List>
+    
     )
   }
 }
