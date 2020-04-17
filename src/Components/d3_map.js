@@ -8,7 +8,7 @@ import React from "react";
 import { Component } from "react-d3-library"
 
 
-const [time, setTime] = React.useState(tihs.props.time);
+const [time, setTime] = React.useState(this.props.time);
 console.log(this.state.time);
 
 var width = 1100*.75, height = 550*.75;
