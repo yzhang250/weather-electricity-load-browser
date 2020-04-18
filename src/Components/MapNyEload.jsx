@@ -3,6 +3,7 @@ import React from "react";
 // import node from "./d3_map"
 import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
+import * as d3tooltip from "d3-tooltip";
 import { feature } from "topojson-client"
 // import { planarRingArea } from "topojson";
 import data from "../data/sample.csv"
@@ -10,6 +11,7 @@ import zip2zone_data from '../data/ny_zone_zip.csv';
 
 const RD3Component = rd3.Component;
 
+var tooltip = d3tooltip(d3);
 
 export default class MapNyEload extends React.Component {
 
