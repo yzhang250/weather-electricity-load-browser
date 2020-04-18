@@ -136,8 +136,9 @@ export default class MapNY extends React.Component {
                                 .enter().append("path")
                                 // .attr("fill", "grey")
                                 .attr("d", this.path)
+                                .attr("id", (d) => { return "zip" + d.properties.ZCTA5CE10 })
                                 .attr("stroke", "black")
-                                .attr("stroke-width", 1)
+                                .attr("stroke-width", 0.3)
                                 .attr("fill", function (d) {
                                     let zipcode = d.properties.ZCTA5CE10;
                                     let zone = zip2zone[zipcode];
@@ -164,6 +165,8 @@ export default class MapNY extends React.Component {
                                 //     .style("stroke-width", 1)})
                                 .on("click", d => {
                                     // console.log(d.properties.ZCTA5CE10);
+                                    d3.select("#zip" + d.properties.ZCTA5CE10)
+                                        .attr("stroke-width", 2)
                                     this.props.onZipChange(d.properties.ZCTA5CE10);
                                     this.setState({
                                         weatherData: {
@@ -206,7 +209,7 @@ export default class MapNY extends React.Component {
                                 // .attr("fill", "grey")
                                 .attr("d", this.path_eload)
                                 .attr("stroke", "black")
-                                .attr("stroke-width", 1)
+                                .attr("stroke-width", 0.3)
                                 .attr("fill", function (d) {
                                     let zipcode = d.properties.ZCTA5CE10;
                                     let zone = zip2zone[zipcode];
@@ -335,6 +338,10 @@ export default class MapNY extends React.Component {
                 })
                 .on("click", d => {
                     // console.log(d.properties.ZCTA5CE10);
+
+                    // this can be used to add thick stroke on map
+                    // d3.select("#zip" + d.properties.ZCTA5CE10)
+                    //     .attr("stroke-width", 2)
                     this.props.onZipChange(d.properties.ZCTA5CE10);
                     this.setState({
                         weatherData: {
@@ -408,12 +415,12 @@ export default class MapNY extends React.Component {
                 <WeatherDataCard data={this.state.weatherData} />
                 <br />
 
-                <Paper elevation={1} >
+                {/* <Paper elevation={1} > */}
                     <Grid container spacing={3}>
                         <Grid item xs={6}><RD3Component data={this.state.d3} /></Grid>
                         <Grid item xs={6}><RD3Component data={this.state.d3_eload} /></Grid>
                     </Grid>
-                </Paper>
+                {/* </Paper> */}
             </div>
         )
     }

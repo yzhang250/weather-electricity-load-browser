@@ -1,51 +1,84 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import { WiThermometer } from "weather-icons-react";
+import { WiStrongWind } from "weather-icons-react";
+import { WiHumidity } from "weather-icons-react";
+import BatteryCharging30Icon from '@material-ui/icons/BatteryCharging30';
+import PinDropIcon from '@material-ui/icons/PinDrop';
 
-const useStyles = makeStyles({
+
+
+
+const useStyles = makeStyles((theme) => ({
   root: {
-    minWidth: 275,
+    flexGrow: 1,
   },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
+  paper: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
   },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-});
+}));
 
 export default function WeatherDataCard(props) {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
+
+  function HeadRow() {
+    return (
+      <React.Fragment>
+        <Grid item xs={2}>
+         <PinDropIcon fontSize="large"/>
+        </Grid>
+        <Grid item xs={2}>
+          <WiThermometer size={48} color='#000' />
+        </Grid>
+        <Grid item xs={2}>
+          <WiStrongWind size={48} color='#000' />
+        </Grid>
+        <Grid item xs={2}>
+          <WiHumidity size={48} color='#000' />
+        </Grid>
+        <Grid item xs={2}>
+          <BatteryCharging30Icon fontSize="large"/>
+        </Grid>
+      </React.Fragment>
+    );
+  }
+
+  function ContentRow() {
+    return (
+      <React.Fragment>
+        <Grid item xs={2}>
+          {props.data.zipcode} in {props.data.zone}
+        </Grid>
+        <Grid item xs={2}>
+          {props.data.temperature} F
+        </Grid>
+        <Grid item xs={2}>
+          {props.data.windSpeed} MPH
+        </Grid>
+        <Grid item xs={2}>
+          {props.data.humidity} %
+        </Grid>
+        <Grid item xs={2}>
+          {props.data.load} KWH
+        </Grid>
+      </React.Fragment>
+    );
+  }
 
   return (
-    <Card className={classes.root}>
-      <CardContent>
-        <Typography variant="body2" component="p">
-        Weather e-load map
-        <br />
-         Zipcode: {props.data.zipcode}
-          <br />
-          Zone: {props.data.zone}
-          <br />
-          Temperature: {props.data.temperature}
-          <br />
-          Wind speed: {props.data.windSpeed}
-          <br />
-          Humidity: {props.data.humidity}
-          <br />
-          Total load: {props.data.load}
-        </Typography>
-      </CardContent>
-    </Card>
+    <div className={classes.root}>
+      <Grid container spacing={1}>
+        <Grid container item xs={12} spacing={3}>
+          <HeadRow />
+        </Grid>
+        <Grid container item xs={12} spacing={3}>
+          <ContentRow />
+        </Grid>
+      </Grid>
+    </div>
   );
 }

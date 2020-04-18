@@ -5,6 +5,8 @@
   "dependencies": {
     "@material-ui/core": "^4.9.7",
     "@material-ui/icons": "^4.9.1",
+    "@mdi/font": "^5.1.45",
+    "@mdi/js": "^5.1.45",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -27,7 +29,8 @@
     "recharts": "^1.8.5",
     "topojson": "^3.0.2",
     "topojson-client": "^3.1.0",
-    "typeface-roboto": "0.0.75"
+    "typeface-roboto": "0.0.75",
+    "weather-icons-react": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
