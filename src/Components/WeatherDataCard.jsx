@@ -51,19 +51,24 @@ export default function WeatherDataCard(props) {
     return (
       <React.Fragment>
         <Grid item xs={2}>
+          <Grid>Location </Grid>
           {props.data.zipcode} in {props.data.zone}
         </Grid>
         <Grid item xs={2}>
-          {props.data.temperature} F
+        <Grid>Temperature (F) </Grid>
+          {props.data.temperature.toString()}
         </Grid>
         <Grid item xs={2}>
-          {props.data.windSpeed} MPH
+        <Grid>Wind Speed (MPH) </Grid>
+          {props.data.windSpeed.toString()} 
         </Grid>
         <Grid item xs={2}>
-          {props.data.humidity} %
+        <Grid>Humidity (%) </Grid>
+          {props.data.humidity.toString()}
         </Grid>
         <Grid item xs={2}>
-          {props.data.load} KWH
+        <Grid>Zone Load (MWH) </Grid>
+          {props.data.load.toString()}
         </Grid>
       </React.Fragment>
     );

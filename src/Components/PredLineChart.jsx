@@ -3,6 +3,7 @@ import React from "react";
 // import node from "./d3_map"
 import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
+import * as d3tooltip from "d3-tooltip";
 import { feature } from "topojson-client"
 // import { planarRingArea } from "topojson";
 import data from "../data/sample.csv"
@@ -50,7 +51,8 @@ export default class PredLineChart extends React.Component {
         console.log(zipcode)
         async function getNext12HoursWeather(zipCode) {
             let baseUrl = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/";
-            let key = "vv0GNymWjO79G743G3TOkE75dHKGL43w" // goto "https://developer.accuweather.com/" register to get new key 50 useage per day per key
+            // let key = "vv0GNymWjO79G743G3TOkE75dHKGL43w" // goto "https://developer.accuweather.com/" register to get new key 50 useage per day per key
+            let key = "bPCTfZexCnANhCfZj6VUAekTAl9cGsLE" // an alternative key
             let paramsVal = {
                 apikey: key,
                 language: "en-us",
@@ -151,8 +153,11 @@ export default class PredLineChart extends React.Component {
 
 
 
+
+
         // Original code from Xiguang
 
+        var tooltip = d3tooltip(d3);
 
         d3.csv(zip2zone_data).then(dt => {
             dt.forEach(function (d) {
@@ -271,8 +276,8 @@ export default class PredLineChart extends React.Component {
                         // console.log("xrange",x_range);
 
                         x.domain(x_range);
-                        y0.domain([load_min, load_max]);
-                        y1.domain([temp_min, temp_max]);
+                        y0.domain([load_min - 5, load_max + 5]);
+                        y1.domain([temp_min - 5, temp_max + 5]);
 
                         var line0 = d3.line()
                             .x(function (d) { return x(d.hour); })
@@ -283,6 +288,17 @@ export default class PredLineChart extends React.Component {
                             .x(function (d) { return x(d.hour); })
                             .y(function (d) { return y1(d.temperature); })
                             .curve(d3.curveMonotoneX);
+
+                                // try tip
+
+                        // tip_temp = d3tip.tip().attr('class', 'd3-tip')
+                        // .html(function(d) {
+                        //     return "Hour: " + d.hour + "<br/> Temperature: " + d.temperature});
+
+                        // tip_load = d3tip.tip().attr('class', 'd3-tip')
+                        //     .html(function(d) {
+                        //         return "Hour: " + d.hour +  "<br/> ZoneLoad: " + d.load});
+                        
 
 
                         this.svg.append("path")
@@ -316,7 +332,14 @@ export default class PredLineChart extends React.Component {
                             .attr("cx", function (d) { return x(d.hour) })
                             .attr("cy", function (d) { return y0(d.pload) })
                             .style("fill", "steelblue")
-                            .attr("r", 5);
+                            .attr("r", 5)
+                            .on('mouseover', function(d) {
+                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH" + "</br> Hour: "  + d.hour.toString()
+                         
+                                tooltip.html(html)
+                                tooltip.show()    
+                              })
+                            .on('mouseout', tooltip.hide());
 
 
                         this.svg.selectAll(".dot1")
@@ -326,7 +349,14 @@ export default class PredLineChart extends React.Component {
                             .attr("cx", function (d) { return x(d.hour) })
                             .attr("cy", function (d) { return y1(d.temperature) })
                             .style("fill", "red")
-                            .attr("r", 5);
+                            .attr("r", 5)
+                            .on('mouseover', function(d) {
+                                var html = "Temperature: " + d.temperature.toString() + " F" + "</br> Hour: "  + d.hour.toString()
+                         
+                                tooltip.html(html)
+                                tooltip.show()    
+                              })
+                            .on('mouseout', tooltip.hide());;
 
                         this.svg.append("text")
                             .attr("transform",
@@ -344,7 +374,7 @@ export default class PredLineChart extends React.Component {
                             .style("text-anchor", "middle")
                             .style("fill", "steelblue")
                             .style("font-family", "sans-serif")
-                            .text("Load MW");
+                            .text("Load MWH");
 
                         this.svg.append("text")
                             .attr("transform", "rotate(-90)")
@@ -363,7 +393,7 @@ export default class PredLineChart extends React.Component {
                             .style("font-size", "16px")
                             .style("font-weight", "bold")
                             .style("font-family", "sans-serif")
-                            .text("Temperature and Predicted Load of Next 12 Hours")
+                            .text("Temperature Forecast and Predicted Load of Next 12 Hours")
 
                         // svg.append("text")
                         //         .attr("x", (width / 2))
@@ -394,7 +424,8 @@ export default class PredLineChart extends React.Component {
         console.log(zipcode)
         async function getNext12HoursWeather(zipCode) {
             let baseUrl = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/";
-            let key = "vv0GNymWjO79G743G3TOkE75dHKGL43w" // goto "https://developer.accuweather.com/" register to get new key 50 useage per day per key
+            // let key = "vv0GNymWjO79G743G3TOkE75dHKGL43w" // goto "https://developer.accuweather.com/" register to get new key 50 useage per day per key
+            let key = "bPCTfZexCnANhCfZj6VUAekTAl9cGsLE" // an alternative key
             let paramsVal = {
                 apikey: key,
                 language: "en-us",
@@ -493,6 +524,8 @@ export default class PredLineChart extends React.Component {
         var y0 = d3.scaleLinear().range([this.height, 0]);
         var y1 = d3.scaleLinear().range([this.height, 0]);
 
+
+        var tooltip = d3tooltip(d3);
 
 
         // Original code from Xiguang
@@ -615,8 +648,8 @@ export default class PredLineChart extends React.Component {
                         // console.log("xrange",x_range);
 
                         x.domain(x_range);
-                        y0.domain([load_min, load_max]);
-                        y1.domain([temp_min, temp_max]);
+                        y0.domain([load_min - 5, load_max + 5]);
+                        y1.domain([temp_min - 5, temp_max + 5]);
 
                         var line0 = d3.line()
                             .x(function (d) { return x(d.hour); })
@@ -660,7 +693,14 @@ export default class PredLineChart extends React.Component {
                             .attr("cx", function (d) { return x(d.hour) })
                             .attr("cy", function (d) { return y0(d.pload) })
                             .style("fill", "steelblue")
-                            .attr("r", 5);
+                            .attr("r", 5)
+                            .on("mouseover", function(d) {
+                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH" + "</br> Hour: "  + d.hour.toString()
+                         
+                                tooltip.html(html)
+                                tooltip.show()    
+                              })
+                              .on("mouseout", tooltip.hide());
 
 
                         this.svg.selectAll(".dot1")
@@ -670,7 +710,14 @@ export default class PredLineChart extends React.Component {
                             .attr("cx", function (d) { return x(d.hour) })
                             .attr("cy", function (d) { return y1(d.temperature) })
                             .style("fill", "red")
-                            .attr("r", 5);
+                            .attr("r", 5)
+                            .on("mouseover", function(d) {
+                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH" + "</br> Hour: "  + d.hour.toString()
+                         
+                                tooltip.html(html)
+                                tooltip.show()    
+                              })
+                            .on("mouseout", tooltip.hide());
 
                         this.svg.append("text")
                             .attr("transform",
@@ -707,7 +754,7 @@ export default class PredLineChart extends React.Component {
                             .style("font-size", "16px")
                             .style("font-weight", "bold")
                             .style("font-family", "sans-serif")
-                            .text("Temperature and Predicted Load of Next 12 Hours")
+                            .text("Temperature Forecast and Predicted Load of Next 12 Hours")
 
                         // svg.append("text")
                         //         .attr("x", (width / 2))
