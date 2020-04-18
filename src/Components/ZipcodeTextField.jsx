@@ -8,24 +8,33 @@ export default class ZipcodeTextField extends Component {
         super(props)
     
         this.state = {
-             value: this.props.zipcode
+             value: this.props.zipcode,
+
         }
     }
-
     handleValueChange = (e) => {
+        console.log("state.value is " + e.target.value)
         this.setState({value:e.target.value})
+        this.zipcode = e.target.value
     }
     onClick = (e) => {
         this.props.turnOffWelcome();
         this.props.turnOnPred();
         this.props.onZipChange(this.state.value);
      }
+
+     componentDidUpdate =(prevProps) =>{
+        if (prevProps.zipcode !== this.props.zipcode) {
+            this.setState({value: this.props.zipcode});
+          }
+     }
     
     render() {
-        // console.log(this.props.zipcode)
-        if (this.state.value !== this.props.zipcode) {
-            this.setState({value:this.props.zipcode})
-        }
+        console.log("props.zipcode: "+this.props.zipcode)
+        // if (this.state.value !== this.props.zipcode) {
+        //     this.setState({value:this.props.zipcode})
+        // }
+        console.log("state.value: " + this.state.value)
         return (
             <div>
                 <form style={{
@@ -36,6 +45,7 @@ export default class ZipcodeTextField extends Component {
                     id="standard-basic" 
                     label="Zipcode" 
                     value={this.state.value}
+                    // value={this.props.zipcode}
                     onChange={this.handleValueChange}
                     />
                     {/* <TextField
