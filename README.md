@@ -12,6 +12,10 @@ Although this is a proof-of-concept project, it has a full potential to be produ
 1. [Node.js](https://nodejs.org/en/)
 2. [To view the predictions, need to disable CORS protection in Chrome](https://stackoverflow.com/questions/3102819/disable-same-origin-policy-in-chrome/6083677#6083677)
 
+### `npm install`
+
+Once clone this package or pull from a fork, change dir to the folder and use `npm install` to install all the dependencies. 
+
 ### `npm start`
 
 Runs the app in the development mode.<br />
