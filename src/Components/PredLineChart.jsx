@@ -1,8 +1,15 @@
 import rd3 from 'react-d3-library';
 import React from "react";
+// import node from "./d3_map"
+import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
 import * as d3tooltip from "d3-tooltip";
+import { feature } from "topojson-client"
+// import { planarRingArea } from "topojson";
+import data from "../data/sample.csv"
 import zip2zone_data from '../data/ny_zone_zip.csv';
+import WeatherDataCard from "./WeatherDataCard"
+import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
 
@@ -114,6 +121,32 @@ export default class PredLineChart extends React.Component {
             return weekDays[index];
         }
 
+        const ZONES = ["CAPITL", "CENTRL", "DUNWOD", "GENESE", "HUD VL", "LONGIL", "MHK VL", "N.Y.C.", "NORTH", "WEST"]
+
+
+        var zone = "N.Y.C"
+        // if (zipcode < 10501) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 10901){
+        //     zone = "DUNWOD"
+        // } else if (zipcode < 11001){
+        //     zone = "HUD VL"
+        // } else if (zipcode < 11101){
+        //     zone = "LONGIL"
+        // } else if (zipcode < 11501) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 11690) {
+        //     zone = "LONGIL"
+        // } else if (zipcode < 11701) {
+        //     zone = "N.Y.C"
+        // } else if (zipcode < 12007) {
+        //     zone = "LONGIL"
+        // }
+
+        // Added for line graph
+
+
+
         var x = d3.scalePoint().range([0, this.width]);
         var y0 = d3.scaleLinear().range([this.height, 0]);
         var y1 = d3.scaleLinear().range([this.height, 0]);
@@ -133,10 +166,10 @@ export default class PredLineChart extends React.Component {
             });
             console.log(dt);
 
-            var selected_zone = dt.filter(z => z.zipcode === zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
+            var selected_zone = dt.filter(z => z.zipcode == zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
             console.log(selected_zone);
 
-            var pop_pram = dt.filter(z => z.zipcode === zipcode).map(i => i.population_zone_pct)[0];
+            var pop_pram = dt.filter(z => z.zipcode == zipcode).map(i => i.population_zone_pct)[0];
             console.log(pop_pram);
 
 
@@ -202,7 +235,7 @@ export default class PredLineChart extends React.Component {
 
 
 
-                        var load = results.filter(r => r.zone === selected_zone).map(function (i) {
+                        var load = results.filter(r => r.zone == selected_zone).map(function (i) {
                             return {
                                 "zipcode": zipcode, //change
                                 "zone": selected_zone,
@@ -237,8 +270,9 @@ export default class PredLineChart extends React.Component {
 
                         console.log(load_min);
                         console.log(load_max);
-                        var x_range = load.filter(l => l.zipcode === zipcode).map(i => i.hour);
+                        var x_range = load.filter(l => l.zipcode == zipcode).map(i => i.hour);
 
+                        var a = d3.extent(load, function (d) { return d.hour; });
                         // console.log("xrange",x_range);
 
                         x.domain(x_range);
@@ -272,8 +306,8 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "none")
                             .attr("d", line0(load));
 
-                        this.svg.append("path")
-                            .style("stroke", "red")
+                        this.svg.append("path").
+                            style("stroke", "red")
                             .style("fill", "none")
                             .attr("d", line1(load));
 
@@ -300,7 +334,7 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "steelblue")
                             .attr("r", 5)
                             .on('mouseover', function(d) {
-                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH</br> Hour: "  + d.hour.toString()
+                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH" + "</br> Hour: "  + d.hour.toString()
                          
                                 tooltip.html(html)
                                 tooltip.show()    
@@ -317,7 +351,7 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "red")
                             .attr("r", 5)
                             .on('mouseover', function(d) {
-                                var html = "Temperature: " + d.temperature.toString() + " F</br> Hour: "  + d.hour.toString()
+                                var html = "Temperature: " + d.temperature.toString() + " F" + "</br> Hour: "  + d.hour.toString()
                          
                                 tooltip.html(html)
                                 tooltip.show()    
@@ -460,6 +494,10 @@ export default class PredLineChart extends React.Component {
             return weekDays[index];
         }
 
+        const ZONES = ["CAPITL", "CENTRL", "DUNWOD", "GENESE", "HUD VL", "LONGIL", "MHK VL", "N.Y.C.", "NORTH", "WEST"]
+
+
+        var zone = "N.Y.C"
         // if (zipcode < 10501) {
         //     zone = "N.Y.C"
         // } else if (zipcode < 10901){
@@ -500,10 +538,10 @@ export default class PredLineChart extends React.Component {
             });
             console.log(dt);
 
-            var selected_zone = dt.filter(z => z.zipcode === zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
+            var selected_zone = dt.filter(z => z.zipcode == zipcode).map(i => i.zone)[0]; // change the zip code to the selected one.
             console.log(selected_zone);
 
-            var pop_pram = dt.filter(z => z.zipcode === zipcode).map(i => i.population_zone_pct)[0];
+            var pop_pram = dt.filter(z => z.zipcode == zipcode).map(i => i.population_zone_pct)[0];
             console.log(pop_pram);
 
 
@@ -569,7 +607,7 @@ export default class PredLineChart extends React.Component {
 
 
 
-                        var load = results.filter(r => r.zone === selected_zone).map(function (i) {
+                        var load = results.filter(r => r.zone == selected_zone).map(function (i) {
                             return {
                                 "zipcode": zipcode, //change
                                 "zone": selected_zone,
@@ -604,7 +642,9 @@ export default class PredLineChart extends React.Component {
 
                         // console.log(load_min);
                         // console.log(load_max);
-                        var x_range = load.filter(l => l.zipcode === zipcode).map(i => i.hour);
+                        var x_range = load.filter(l => l.zipcode == zipcode).map(i => i.hour);
+
+                        var a = d3.extent(load, function (d) { return d.hour; });
                         // console.log("xrange",x_range);
 
                         x.domain(x_range);
@@ -627,8 +667,8 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "none")
                             .attr("d", line0(load));
 
-                        this.svg.append("path")
-                            .style("stroke", "red")
+                        this.svg.append("path").
+                            style("stroke", "red")
                             .style("fill", "none")
                             .attr("d", line1(load));
 
@@ -655,7 +695,7 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "steelblue")
                             .attr("r", 5)
                             .on("mouseover", function(d) {
-                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH</br> Hour: "  + d.hour.toString()
+                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH" + "</br> Hour: "  + d.hour.toString()
                          
                                 tooltip.html(html)
                                 tooltip.show()    
@@ -672,7 +712,7 @@ export default class PredLineChart extends React.Component {
                             .style("fill", "red")
                             .attr("r", 5)
                             .on("mouseover", function(d) {
-                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH</br> Hour: "  + d.hour.toString()
+                                var html = "Load: " + d.pload.toFixed(2).toString() + " MWH" + "</br> Hour: "  + d.hour.toString()
                          
                                 tooltip.html(html)
                                 tooltip.show()    
