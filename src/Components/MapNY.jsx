@@ -292,6 +292,17 @@ export default class MapNY extends React.Component {
             return time.slice(0, 10) + " " + time.slice(11) + ":00";
 
         }
+        function getScaledArray(min, max, scale){
+            let result = [min];
+            for(let i = 1; i< scale -1; i++ ){
+                let addson = (max - min) / (scale -1);
+                result.push(min + i*addson);
+            }
+            result.push(max);
+            return result;
+        }
+        let loadLegendArray = [];
+        let tempLegendArray = [];
         let zoneLoad = {};
         let minLoad = 1000000;
         let maxLoad = 0;
@@ -321,6 +332,8 @@ export default class MapNY extends React.Component {
                     zoneHumidity[zip2zone[data[i].zipcode]] = data[i].HourlyRelativeHumidity;
                     minLoad = Math.min(minLoad, data[i].zone_load_total);
                     maxLoad = Math.max(maxLoad, data[i].zone_load_total)
+                                            loadLegendArray = getScaledArray(minLoad, maxLoad, 9);
+                        tempLegendArray = getScaledArray(minTemp, maxTemp, 9);
                     // todo: zoneLoad is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
                     zoneLoad[zip2zone[data[i].zipcode]] = data[i].zone_load_total;
                 }
