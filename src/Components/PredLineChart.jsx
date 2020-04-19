@@ -276,8 +276,8 @@ export default class PredLineChart extends React.Component {
                         // console.log("xrange",x_range);
 
                         x.domain(x_range);
-                        y0.domain([load_min - 5, load_max + 5]);
-                        y1.domain([temp_min - 5, temp_max + 5]);
+                        y0.domain([load_min*0.9, load_max*1.1]);
+                        y1.domain([temp_min*0.9, temp_max*1.1]);
 
                         var line0 = d3.line()
                             .x(function (d) { return x(d.hour); })
@@ -339,7 +339,7 @@ export default class PredLineChart extends React.Component {
                                 tooltip.html(html)
                                 tooltip.show()    
                               })
-                            .on('mouseout', tooltip.hide());
+                            .on('mouseout', function(d){tooltip.hide();});
 
 
                         this.svg.selectAll(".dot1")
@@ -356,7 +356,7 @@ export default class PredLineChart extends React.Component {
                                 tooltip.html(html)
                                 tooltip.show()    
                               })
-                            .on('mouseout', tooltip.hide());;
+                            .on('mouseout', function(d){tooltip.hide();});;
 
                         this.svg.append("text")
                             .attr("transform",
@@ -648,8 +648,8 @@ export default class PredLineChart extends React.Component {
                         // console.log("xrange",x_range);
 
                         x.domain(x_range);
-                        y0.domain([load_min - 5, load_max + 5]);
-                        y1.domain([temp_min - 5, temp_max + 5]);
+                        y0.domain([load_min*0.9, load_max*1.1]);
+                        y1.domain([temp_min*0.9, temp_max*1.1]);
 
                         var line0 = d3.line()
                             .x(function (d) { return x(d.hour); })
