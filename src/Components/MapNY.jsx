@@ -1,15 +1,11 @@
 import rd3 from 'react-d3-library';
 import React from "react";
-// import node from "./d3_map"
-import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
 import { feature } from "topojson-client"
-// import { planarRingArea } from "topojson";
 import data from "../data/sample.csv"
 import zip2zone_data from '../data/ny_zone_zip.csv';
 import WeatherDataCard from "./WeatherDataCard"
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 
 
 const RD3Component = rd3.Component;
@@ -25,7 +21,6 @@ export default class MapNY extends React.Component {
             time: this.props.time,
             data: {},
             zip2zone: {},
-            d3_eload: "",
             weatherData: {
                 zipcode: "",
                 zone: "",
@@ -61,6 +56,8 @@ export default class MapNY extends React.Component {
 
 
 
+
+
     componentDidMount = () => {
         // console.log("component did mount");
         const timeCovert = (time) => {
@@ -69,6 +66,16 @@ export default class MapNY extends React.Component {
 
             return time.slice(0, 10) + " " + time.slice(11) + ":00";
 
+        }
+
+        function getScaledArray(min, max, scale){
+            let result = [min];
+            for(let i = 1; i< scale -1; i++ ){
+                let addson = (max - min) / (scale -1);
+                result.push(min + i*addson);
+            }
+            result.push(max);
+            return result;
         }
 
         let zip2zone = {};
@@ -80,16 +87,11 @@ export default class MapNY extends React.Component {
         let zoneLoad = {};
         let minLoad = 1200;
         let maxLoad = 800;
+        let loadLegendArray = [];
+        let tempLegendArray = [];
 
         let t = timeCovert(this.state.time);
         console.log("did mount" + this.props.time)
-        function choose(choices) {
-            var index = Math.floor(Math.random() * choices.length);
-            return choices[index];
-        }
-
-        const palette = ["red", "green", "black", "yellow", "pink", "blue"]
-        const colors = [choose(palette), choose(palette), choose(palette), choose(palette)]
         let _data = {};
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
@@ -104,7 +106,9 @@ export default class MapNY extends React.Component {
                         minLoad = Math.min(minLoad, data[i].zone_load_total);
                         maxLoad = Math.max(maxLoad, data[i].zone_load_total)
                         minTemp = Math.min(minTemp, data[i].HourlyWetBulbTemperature);
-                        maxTemp = Math.max(maxTemp, data[i].HourlyWetBulbTemperature)
+                        maxTemp = Math.max(maxTemp, data[i].HourlyWetBulbTemperature);
+                        loadLegendArray = getScaledArray(minLoad, maxLoad, 9);
+                        tempLegendArray = getScaledArray(minTemp, maxTemp, 9);
                         // todo: zonetmp is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
                         zoneTmp[zip2zone[data[i].zipcode]] = data[i].HourlyWetBulbTemperature;
                         zoneWind[zip2zone[data[i].zipcode]] = data[i].HourlyWindSpeed;
@@ -154,15 +158,6 @@ export default class MapNY extends React.Component {
 
                                 }
                                 )
-                                // .on("mouseover", (d) => {d3.select(d.properties)
-                                //     .transition()
-                                //     .duration(200)
-                                //     .style("opacity", 1)
-                                //     .style("stroke-width", 2)})
-                                // .on("mouseout", (d) => {d3.select(d.properties)
-                                //     .transition()
-                                //     .duration(200)
-                                //     .style("stroke-width", 1)})
                                 .on("click", d => {
                                     // console.log(d.properties.ZCTA5CE10);
                                     d3.select("#zip" + d.properties.ZCTA5CE10)
@@ -182,17 +177,6 @@ export default class MapNY extends React.Component {
                                 .attr("text-anchor", "middle")
                                 .style("font-size", "16px")
                                 .text("Weather map")
-                            // .on("mouseout", () =>{
-                            //     this.setState({weatherData:{
-                            //         zipcode: "",
-                            //         zone:"",
-                            //         temperature: "",
-                            //         windSpeed:"",
-                            //         humidity:"",
-                            //     }
-                            // })
-                            // })
-
                             // This will plot the eload map
 
                             let x_eload = d3.scaleLog()
@@ -229,10 +213,10 @@ export default class MapNY extends React.Component {
                                         weatherData: {
                                             zipcode: d.properties.ZCTA5CE10,
                                             zone: zip2zone[d.properties.ZCTA5CE10],
-                                            temperature: zoneTmp[zip2zone[d.properties.ZCTA5CE10]] + " F",
-                                            windSpeed: zoneWind[zip2zone[d.properties.ZCTA5CE10]] + " MPH",
-                                            humidity: zoneHumidity[zip2zone[d.properties.ZCTA5CE10]] + " %",
-                                            load: zoneLoad[zip2zone[d.properties.ZCTA5CE10]] + " KWH"
+                                            temperature: zoneTmp[zip2zone[d.properties.ZCTA5CE10]],
+                                            windSpeed: zoneWind[zip2zone[d.properties.ZCTA5CE10]],
+                                            humidity: zoneHumidity[zip2zone[d.properties.ZCTA5CE10]],
+                                            load: zoneLoad[zip2zone[d.properties.ZCTA5CE10]]
                                         }
                                     })
                                 })
@@ -243,12 +227,46 @@ export default class MapNY extends React.Component {
                                 .style("font-size", "16px")
                                 .text("Temperature map");
 
+                            for(let i = 0; i < 9; i++){
+                                this.svg.append("rect")
+                                .attr("class", "legend")
+                                .attr("x", 10)
+                                .attr("y", 60 + i*17)
+                                .attr("width", 40)
+                                .attr("height", 10)
+                                .attr("fill", color(i))
+                    
+                                this.svg.append("text")
+                                .attr("class", "legend")
+                                .text(tempLegendArray[i].toFixed(2))
+                                .attr("font-size", "12px")
+                                .attr("x", 55)
+                                .attr("y", 60+ i*17 + 10)                  
+                            }
+
                             this.svg_eload.append("text")
                                 .attr("x", (this.width / 2))
                                 .attr("y", 30)
                                 .attr("text-anchor", "middle")
                                 .style("font-size", "16px")
                                 .text("Electricity load map");
+                            
+                            for(let i = 0; i < 9; i++){
+                                this.svg_eload.append("rect")
+                                .attr("class", "legend")
+                                .attr("x", 10)
+                                .attr("y", 60 + i*17)
+                                .attr("width", 40)
+                                .attr("height", 10)
+                                .attr("fill", color_eload(i))
+                    
+                                this.svg_eload.append("text")
+                                .attr("class", "legend")
+                                .text(loadLegendArray[i].toFixed(2))
+                                .attr("font-size", "12px")
+                                .attr("x", 55)
+                                .attr("y", 60+ i*17 + 10)                 
+                            }
 
 
                         })
@@ -274,6 +292,17 @@ export default class MapNY extends React.Component {
             return time.slice(0, 10) + " " + time.slice(11) + ":00";
 
         }
+        function getScaledArray(min, max, scale){
+            let result = [min];
+            for(let i = 1; i< scale -1; i++ ){
+                let addson = (max - min) / (scale -1);
+                result.push(min + i*addson);
+            }
+            result.push(max);
+            return result;
+        }
+        let loadLegendArray = [];
+        let tempLegendArray = [];
         let zoneLoad = {};
         let minLoad = 1000000;
         let maxLoad = 0;
@@ -285,13 +314,6 @@ export default class MapNY extends React.Component {
         let maxTemp = -20;
         let t = timeCovert(this.props.time);
         console.log(this.props.time)
-        function choose(choices) {
-            var index = Math.floor(Math.random() * choices.length);
-            return choices[index];
-        }
-
-        const palette = ["red", "green", "black", "yellow", "pink", "blue"]
-        const colors = [choose(palette), choose(palette), choose(palette), choose(palette)]
         let _data = {};
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
@@ -310,6 +332,8 @@ export default class MapNY extends React.Component {
                     zoneHumidity[zip2zone[data[i].zipcode]] = data[i].HourlyRelativeHumidity;
                     minLoad = Math.min(minLoad, data[i].zone_load_total);
                     maxLoad = Math.max(maxLoad, data[i].zone_load_total)
+                                            loadLegendArray = getScaledArray(minLoad, maxLoad, 9);
+                        tempLegendArray = getScaledArray(minTemp, maxTemp, 9);
                     // todo: zoneLoad is the zone temperature, now is using the zip shown latest in the zone to assign the temp, this can be further refine by taking average
                     zoneLoad[zip2zone[data[i].zipcode]] = data[i].zone_load_total;
                 }
@@ -347,24 +371,13 @@ export default class MapNY extends React.Component {
                         weatherData: {
                             zipcode: d.properties.ZCTA5CE10,
                             zone: zip2zone[d.properties.ZCTA5CE10],
-                            temperature: zoneTmp[zip2zone[d.properties.ZCTA5CE10]] + " F",
-                            windSpeed: zoneWind[zip2zone[d.properties.ZCTA5CE10]] + " MPH",
-                            humidity: zoneHumidity[zip2zone[d.properties.ZCTA5CE10]] + " %",
-                            load: zoneLoad[zip2zone[d.properties.ZCTA5CE10]] + " KWH"
+                            temperature: zoneTmp[zip2zone[d.properties.ZCTA5CE10]],
+                            windSpeed: zoneWind[zip2zone[d.properties.ZCTA5CE10]],
+                            humidity: zoneHumidity[zip2zone[d.properties.ZCTA5CE10]],
+                            load: zoneLoad[zip2zone[d.properties.ZCTA5CE10]]
                         }
                     })
                 })
-            // .on("mouseout", () =>{
-            //     this.setState({weatherData:{
-            //         zipcode: "",
-            //         zone:"",
-            //         temperature: "",
-            //         windSpeed:"",
-            //         humidity:"",
-            //     }
-            // })
-            //  })
-
 
             let x_eload = d3.scaleLog()
                 .domain([minLoad, maxLoad])
@@ -395,10 +408,10 @@ export default class MapNY extends React.Component {
                         weatherData: {
                             zipcode: d.properties.ZCTA5CE10,
                             zone: zip2zone[d.properties.ZCTA5CE10],
-                            temperature: zoneTmp[zip2zone[d.properties.ZCTA5CE10]] + " F",
-                            windSpeed: zoneWind[zip2zone[d.properties.ZCTA5CE10]] + " MPH",
-                            humidity: zoneHumidity[zip2zone[d.properties.ZCTA5CE10]] + " %",
-                            load: zoneLoad[zip2zone[d.properties.ZCTA5CE10]] + " KWH"
+                            temperature: zoneTmp[zip2zone[d.properties.ZCTA5CE10]],
+                            windSpeed: zoneWind[zip2zone[d.properties.ZCTA5CE10]],
+                            humidity: zoneHumidity[zip2zone[d.properties.ZCTA5CE10]],
+                            load: zoneLoad[zip2zone[d.properties.ZCTA5CE10]]
                         }
                     })
                 });

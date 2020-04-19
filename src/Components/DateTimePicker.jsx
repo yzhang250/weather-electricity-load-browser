@@ -8,7 +8,7 @@ export default class DateTimePicker extends Component {
         super(props)
     
         this.state = {
-             value: "2015-01-01T01:00"
+             value: "2019-12-01T01:00"
         }
     }
 
@@ -32,7 +32,7 @@ export default class DateTimePicker extends Component {
                         id="datetime-local"
                         label="Time to view"
                         type="datetime-local"
-                        defaultValue="2015-01-01T01:00"
+                        defaultValue="2019-12-01T01:00"
                         style={{
                             marginLeft: 4,
                             marginRight: 4,

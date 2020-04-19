@@ -1,0 +1,124 @@
+---
+title: " Load Forecasting"
+author: "Chao Chen"
+date: "4/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r 1. library loading, message = FALSE, warning = FALSE}
+library(tidyverse)
+#library(ggplot2)
+library(mice)
+library(psych)
+library(forecast)
+library(ggfortify)
+library(tseries)
+library(timeSeries)
+library(xts)
+library(mice)
+library(lubridate)
+library(gridExtra)
+library(here)
+library(caret)
+library(GGally)
+library(kernlab)
+library(rpart)
+library(rpart.plot)
+library(fBasics)
+library(gganimate)
+library(nnet)
+library(earth)
+library(readr)
+library(doParallel)
+
+```
+
+```{r setting environment}
+rm(list = ls())
+set.seed(1234)
+```
+
+```{r 2. Loading original data}
+
+loadNYISO <- read_csv(here::here("data", "loadNYISO.csv"),
+col_types = cols(Hour = col_character(),
+Month = col_character()))
+
+loadNYISO$zone = as.factor(loadNYISO$zone)
+loadNYISO$Month = as.factor(loadNYISO$Month)
+loadNYISO$Hour = as.factor(loadNYISO$Hour)
+loadNYISO$Weekday = as.factor(loadNYISO$Weekday)
+loadNYISO$Holiday = as.factor(loadNYISO$Holiday)
+
+```
+
+```{r preliminary examine data}
+summary(loadNYISO)
+describe(loadNYISO)
+md.pattern(loadNYISO)
+
+loadNYISO %>% ggplot(aes(x=Temperature, y=ZoneLoad, group = zone )) + geom_point(aes(color = zone))
+
+loadNYISO %>% ggplot(aes(x=WindSpeed, y=ZoneLoad, group = zone )) + geom_point(aes(color = zone))
+
+loadNYISO %>% ggplot(aes(x=Holiday, y=ZoneLoad)) + geom_boxplot(aes(color = zone))
+
+loadNYISO %>% ggplot(aes(x=Weekday, y=ZoneLoad)) + geom_boxplot(aes(color = zone))
+
+```
+
+```{r preliminary fitting RF using sample one year data}
+rfFit = randomForest::randomForest(ZoneLoad ~., loadNYISO, ntree = 300, mtry = 2, importance =T)
+```
+
+```{r setting parallel computation}
+library(doParallel)
+coreNum = detectCores() 
+cl = makeCluster(coreNum)
+registerDoParallel(cl)
+#cl = makeCluster(coreNum, type = "FORK")
+```
+
+```{r using random search method for parameter tuning}
+adaptControl <- trainControl(method = "adaptive_cv",
+
+                             number = 5, repeats = 2,
+
+                             adaptive = list(min = 5, alpha = 0.05, 
+
+                                             method = "gls", complete = TRUE),
+
+                             search = "random")
+```
+
+```{r using grid seach for parameter tuning}
+ctrl1 = trainControl(method = "CV", number =10, allowParallel = T)
+
+tuneGrid = expand.grid(ntree = c(100, 300, 500, 700, 1000),
+                       nodesize = seq(3, 5, 7, 10, 15), 
+                       samplesize = c(0.5, 0.6, 0.7, 0.8),
+                       mtry = c(2, 3, 4, 5),
+                       oob_RMSE = 0)
+
+rfFit1 = train(ZoneLoad ~ ., 
+               data = loadNYISO,
+               method = 'rf',
+               tuneGrid = tuneGrid,
+               #tuneLength = 30,
+               #tuneControl = adaptControl,
+               trControl = ctrl1
+              )
+
+stopCluster(cl)
+
+
+```
+
+```{r fitting the final model}
+rfFitFinal = randomForest::randomForest(ZoneLoad ~., loadNYISO, ntree = 500, mtry = 3, samplesize = 0.8*nrow(loadNYISO), nodesize = 5, importance =T)
+```
+
