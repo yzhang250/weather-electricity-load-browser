@@ -700,7 +700,7 @@ export default class PredLineChart extends React.Component {
                                 tooltip.html(html)
                                 tooltip.show()    
                               })
-                              .on("mouseout", tooltip.hide());
+                              .on("mouseout", function(d){tooltip.hide();});
 
 
                         this.svg.selectAll(".dot1")
@@ -717,7 +717,7 @@ export default class PredLineChart extends React.Component {
                                 tooltip.html(html)
                                 tooltip.show()    
                               })
-                            .on("mouseout", tooltip.hide());
+                            .on("mouseout", function(d){tooltip.hide();});
 
                         this.svg.append("text")
                             .attr("transform",
