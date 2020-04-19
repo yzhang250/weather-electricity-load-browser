@@ -1,17 +1,11 @@
 import rd3 from 'react-d3-library';
 import React from "react";
-// import node from "./d3_map"
-import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
-import * as d3tooltip from "d3-tooltip";
 import { feature } from "topojson-client"
-// import { planarRingArea } from "topojson";
 import data from "../data/sample.csv"
 import zip2zone_data from '../data/ny_zone_zip.csv';
 
 const RD3Component = rd3.Component;
-
-var tooltip = d3tooltip(d3);
 
 export default class MapNyEload extends React.Component {
 
@@ -57,13 +51,6 @@ export default class MapNyEload extends React.Component {
         let maxLoad = 800;
 
         let t = timeCovert(this.props.time);
-        function choose(choices) {
-            var index = Math.floor(Math.random() * choices.length);
-            return choices[index];
-        }
-
-        const palette = ["red", "green", "black", "yellow", "pink", "blue"]
-        const colors = [choose(palette), choose(palette), choose(palette), choose(palette)]
         let _data = {};
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
@@ -147,13 +134,6 @@ export default class MapNyEload extends React.Component {
         let maxLoad = 0;
 
         let t = timeCovert(this.props.time);
-        function choose(choices) {
-            var index = Math.floor(Math.random() * choices.length);
-            return choices[index];
-        }
-
-        const palette = ["red", "green", "black", "yellow", "pink", "blue"]
-        const colors = [choose(palette), choose(palette), choose(palette), choose(palette)]
         let _data = {};
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {

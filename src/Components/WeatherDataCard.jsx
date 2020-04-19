@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { WiThermometer } from "weather-icons-react";
 import { WiStrongWind } from "weather-icons-react";
@@ -24,6 +23,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function WeatherDataCard(props) {
   const classes = useStyles();
+  var temperature = props.data.temperature;
+  var windSpeed = props.data.windSpeed;
+  var humidity = props.data.humidity;
+  var load = props.data.load;
+  temperature = temperature.includes("F")?temperature.replace("F", ""):temperature;
+  windSpeed = windSpeed.includes("MPH")?windSpeed.replace("MPH", ""):windSpeed;
+  humidity = humidity.includes("%")?humidity.replace("%", ""):humidity;
+  load = load.includes("KWH")?load.replace("KWH", ""):load;
+
 
   function HeadRow() {
     return (
@@ -56,19 +64,19 @@ export default function WeatherDataCard(props) {
         </Grid>
         <Grid item xs={2}>
         <Grid>Temperature (F) </Grid>
-          {props.data.temperature.toString()}
+          {temperature}
         </Grid>
         <Grid item xs={2}>
         <Grid>Wind Speed (MPH) </Grid>
-          {props.data.windSpeed.toString()} 
+          {windSpeed} 
         </Grid>
         <Grid item xs={2}>
         <Grid>Humidity (%) </Grid>
-          {props.data.humidity.toString()}
+          {humidity}
         </Grid>
         <Grid item xs={2}>
         <Grid>Zone Load (MWH) </Grid>
-          {props.data.load.toString()}
+          {load}
         </Grid>
       </React.Fragment>
     );
