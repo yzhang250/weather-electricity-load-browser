@@ -1,13 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
-import { Redirect } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -16,18 +14,10 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Github from '@material-ui/icons/GitHub';
-import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
-import MapChart from "./MapChart";
-import { Icon } from '@material-ui/core';
-import MapNY from "./MapNY"
-import ListItems from "./ListItems"
-import Welcome from "./Welcome"
-import MapNyEload from './MapNyEload';
+import MapNY from "./MapNY";
+import ListItems from "./ListItems";
+import Welcome from "./Welcome";
 import PredLineChart from './PredLineChart';
 import EmailIcon from '@material-ui/icons/Email';
 
@@ -129,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open] = React.useState(true);
   const [welcome, setWelcome] = React.useState(true);
   const [time, setTime] = React.useState("");
   const [zip, setZip] = React.useState("10001");
@@ -153,13 +143,6 @@ export default function Dashboard() {
     // console.log(zip);
   }
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   const turnOffWelcome = () => {
     setWelcome(false);
   }
@@ -167,7 +150,6 @@ export default function Dashboard() {
   const turnOnWelcome = () => {
     setWelcome(true);
   }
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <div className={classes.root}>

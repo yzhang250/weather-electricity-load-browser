@@ -1,15 +1,11 @@
 import rd3 from 'react-d3-library';
 import React from "react";
-// import node from "./d3_map"
-import { Divider } from '@material-ui/core';
 import * as d3 from "d3";
 import { feature } from "topojson-client"
-// import { planarRingArea } from "topojson";
 import data from "../data/sample.csv"
 import zip2zone_data from '../data/ny_zone_zip.csv';
 import WeatherDataCard from "./WeatherDataCard"
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 
 
 const RD3Component = rd3.Component;
@@ -25,7 +21,6 @@ export default class MapNY extends React.Component {
             time: this.props.time,
             data: {},
             zip2zone: {},
-            d3_eload: "",
             weatherData: {
                 zipcode: "",
                 zone: "",
@@ -83,13 +78,6 @@ export default class MapNY extends React.Component {
 
         let t = timeCovert(this.state.time);
         console.log("did mount" + this.props.time)
-        function choose(choices) {
-            var index = Math.floor(Math.random() * choices.length);
-            return choices[index];
-        }
-
-        const palette = ["red", "green", "black", "yellow", "pink", "blue"]
-        const colors = [choose(palette), choose(palette), choose(palette), choose(palette)]
         let _data = {};
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
@@ -285,13 +273,6 @@ export default class MapNY extends React.Component {
         let maxTemp = -20;
         let t = timeCovert(this.props.time);
         console.log(this.props.time)
-        function choose(choices) {
-            var index = Math.floor(Math.random() * choices.length);
-            return choices[index];
-        }
-
-        const palette = ["red", "green", "black", "yellow", "pink", "blue"]
-        const colors = [choose(palette), choose(palette), choose(palette), choose(palette)]
         let _data = {};
         d3.csv(zip2zone_data).then(function (data) {
             for (let i = 0; i < data.length; i++) {
